@@ -36,7 +36,7 @@ typedef struct {
 // declare a function to initialize a new chunk
 void initChunk(Chunk *chunk);
 
-void freeChuck(Chunk *chunk);
+void freeChunk(Chunk *chunk);
 
 // append a byte to the end of chuck
 void writeChunk(Chunk *chunk, uint8_t byte, int line);
