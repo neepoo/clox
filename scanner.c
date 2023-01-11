@@ -25,7 +25,7 @@ void initScanner(const char *source) {
 static bool isAtEnd() {
     return *scanner.current == '\0';
 }
-
+// 返回当前字符，然后前进一格
 static char advance() {
     scanner.current++;
     return scanner.current[-1];
@@ -195,6 +195,7 @@ Token scanToken() {
     skipWhitespace();
     scanner.start = scanner.current;
     if (isAtEnd()) return makeToken(TOKEN_EOF);
+    // Token的第一个字符
     char c = advance();
     if (isAlpha(c)) return identifier();
     if (isDigit(c)) return number();
