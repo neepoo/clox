@@ -25,22 +25,44 @@ static Obj *allocateObject(size_t size, ObjType type) {
     return object;
 }
 
-static ObjString *allocateString(char *chars, int length) {
+// allocating the string and copying its characters over is already an O(n) operation,
+// so it’s a good time to also do the O(n) calculation of the string’s hash.
+// The fun happens over at the callers. allocateString() is called from two places:
+// the function that copies a string and
+// the one that takes ownership of an existing dynamically allocated string. We’ll start with the first.
+static ObjString *allocateString(char *chars, int length, uint32_t hash) {
     ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
     string->length = length;
     string->chars = chars;
+    string->hash = hash;
     return string;
 }
 
+// 字符串hash
+//This is the actual bona fide “hash function” in clox.
+// The algorithm is called “FNV-1a”, and is the shortest decent hash function I know.
+// Brevity is certainly a virtue in a book that aims to show you every line of code.
+static uint32_t hashString(const char *key, int length) {
+    // ou start with some initial hash value, usually a constant with certain carefully chosen mathematical properties.
+    uint32_t hash = 2166136261u;
+    for (int i = 0; i < length; i++) {
+        hash ^= (uint8_t) key[i];
+        hash *= 16777619;
+    }
+    return hash;
+}
+
 ObjString *takeString(char *chars, int length) {
-    return allocateString(chars, length);
+    uint32_t hash = hashString(chars, length);
+    return allocateString(chars, length, hash);
 };
 
 ObjString *copyString(const char *chars, int length) {
+    uint32_t hash = hashString(chars, length);
     char *heapChars = ALLOCATE(char, length + 1);
     memcpy(heapChars, chars, length);
     heapChars[length] = '\0';
-    return allocateString(heapChars, length);
+    return allocateString(heapChars, length, hash);
 };
 
 void printObject(Value value) {

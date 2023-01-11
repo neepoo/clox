@@ -25,6 +25,7 @@ struct ObjString {
     Obj obj;
     int length;
     char *chars;
+    uint32_t hash;  // 为了避免每次重新计算hash，我cache it
 };
 
 ObjString *takeString(char *chars, int length);
