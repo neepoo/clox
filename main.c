@@ -52,6 +52,7 @@ static char *readFile(const char *path) {
     buffer[bytesRead] = '\0';
     fclose(file);
     // 调用法需要free掉buffer
+    // TEST GIT COMMIT SIG
     return buffer;
 }
 
